@@ -42,18 +42,19 @@ def minimax(game_state, n=0):
     else:
         score = -2
         move = -1, -1
-        for row in range(game_size[0]):
-            for column in range(game_size[1]):
+        for row in reversed(range(game_size[0])):
+            for column in reversed(range(game_size[1])):
                 checks = checks + 1
                 if checks % 100000 == 0:
                     print(checks)
                 if game_state[row][column]:
-                    t_game_state = game_state
-                    t_game_state = click_tiles(row, column, t_game_state)
+                    t_game_state = click_tiles(row, column, game_state)
                     t_score = -minimax(t_game_state, n + 1)
                     if t_score > score:
                         score = t_score
                         move = row, column
+                        if n == 0:
+                            break
         if n == 0:
             print(checks)
             return move

@@ -6,9 +6,9 @@ import copy
 from time import sleep
 
 user32 = ctypes.windll.user32
-#pygame.init()
+# pygame.init()
 size = width, height = round(user32.GetSystemMetrics(0) / 1.3), round(user32.GetSystemMetrics(1) / 1.3)
-#screen = pygame.display.set_mode(size)  # this is the surface
+# screen = pygame.display.set_mode(size)  # this is the surface
 won = 0
 
 game_size = (3, 3)
@@ -22,15 +22,16 @@ for i in range(game_size[0]):
 def click_tiles(x, y, game_state):
     game_state = copy.deepcopy(game_state)
     if game_state[x][y]:
-        for i in range(x + 1):
-            for j in range(y + 1):
-                game_state[i][j] = False
+        for c_row in range(x + 1):
+            for c_column in range(y + 1):
+                game_state[c_row][c_column] = False
     return game_state
 
 
 print(tiles)
 turn = 0
 checks = 0
+
 
 def minimax(game_state, n=0):
     global checks
@@ -41,7 +42,7 @@ def minimax(game_state, n=0):
             return 1
     else:
         score = -2
-        move = -1, -1
+        m_move = -1, -1
         for row in reversed(range(game_size[0])):
             for column in reversed(range(game_size[1])):
                 checks = checks + 1
@@ -52,21 +53,22 @@ def minimax(game_state, n=0):
                     t_score = -minimax(t_game_state, n + 1)
                     if t_score > score:
                         score = t_score
-                        move = row, column
+                        m_move = row, column
                         if n == 0:
                             break
         if n == 0:
             print(checks)
-            return move
+            return m_move
         else:
             return score
 
+
 graph = []
 
-for i in range(4):
-    for j in range(4):
+for g_wid in range(4):
+    for g_height in range(4):
         checks = 0
-        game_size = (i + 1, j + 1)
+        game_size = (g_wid + 1, g_height + 1)
         tiles = []
         for i in range(game_size[0]):
             tiles.append([])
@@ -77,10 +79,10 @@ for i in range(4):
         print(graph)
 
 
-#t = copy.deepcopy(tiles)
-#move = minimax(tiles)
-#tiles = click_tiles(move[0], move[1], tiles)
-#checks = 0
+# t = copy.deepcopy(tiles)
+# move = minimax(tiles)
+# tiles = click_tiles(move[0], move[1], tiles)
+# checks = 0
 
 while False:
     for event in pygame.event.get():

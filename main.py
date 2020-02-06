@@ -6,12 +6,12 @@ import copy
 from time import sleep
 
 user32 = ctypes.windll.user32
-pygame.init()
+#pygame.init()
 size = width, height = round(user32.GetSystemMetrics(0) / 1.3), round(user32.GetSystemMetrics(1) / 1.3)
-screen = pygame.display.set_mode(size)  # this is the surface
+#screen = pygame.display.set_mode(size)  # this is the surface
 won = 0
 
-game_size = (4, 2)
+game_size = (3, 3)
 tiles = []
 for i in range(game_size[0]):
     tiles.append([])
@@ -30,8 +30,10 @@ def click_tiles(x, y, game_state):
 
 print(tiles)
 turn = 0
+checks = 0
 
 def minimax(game_state, n=0):
+    global checks
     if not game_state[-1][-1]:
         if n == 0:
             return -1, -1
@@ -42,24 +44,44 @@ def minimax(game_state, n=0):
         move = -1, -1
         for row in range(game_size[0]):
             for column in range(game_size[1]):
+                checks = checks + 1
+                if checks % 100000 == 0:
+                    print(checks)
                 if game_state[row][column]:
-                    t_game_state = copy.deepcopy(game_state)
+                    t_game_state = game_state
                     t_game_state = click_tiles(row, column, t_game_state)
                     t_score = -minimax(t_game_state, n + 1)
                     if t_score > score:
                         score = t_score
                         move = row, column
         if n == 0:
+            print(checks)
             return move
         else:
             return score
 
+graph = []
 
-t = copy.deepcopy(tiles)
-move = minimax(tiles)
-tiles = click_tiles(move[0], move[1], tiles)
+for i in range(4):
+    for j in range(4):
+        checks = 0
+        game_size = (i + 1, j + 1)
+        tiles = []
+        for i in range(game_size[0]):
+            tiles.append([])
+            for j in range(game_size[1]):
+                tiles[i].append(True)
+        minimax(tiles)
+        graph.append((game_size, checks))
+        print(graph)
 
-while True:
+
+#t = copy.deepcopy(tiles)
+#move = minimax(tiles)
+#tiles = click_tiles(move[0], move[1], tiles)
+#checks = 0
+
+while False:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             sys.exit()
@@ -87,11 +109,4 @@ while True:
                     c = (127, 0, 0)
             pygame.draw.rect(screen, c, pygame.Rect(i*110 + 100, j * 110 + 100, 100, 100))
     pygame.draw.circle(screen, (0, 0, ((turn + 1) % 2) * 200 + 55), (width - 100, round(height / 2)), 45)
-    pygame.display.flip()
-
-while False:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            sys.exit()
-    screen.fill((0, 0, 0))
     pygame.display.flip()

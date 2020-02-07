@@ -33,56 +33,8 @@ turn = 0
 checks = 0
 
 
-def minimax(game_state, n=0):
-    global checks
-    if not game_state[-1][-1]:
-        if n == 0:
-            return -1, -1
-        else:
-            return 1
-    else:
-        score = -2
-        m_move = -1, -1
-        for row in reversed(range(game_size[0])):
-            for column in reversed(range(game_size[1])):
-                checks = checks + 1
-                if checks % 100000 == 0:
-                    print(checks)
-                if game_state[row][column]:
-                    t_game_state = click_tiles(row, column, game_state)
-                    t_score = -minimax(t_game_state, n + 1)
-                    if t_score > score:
-                        score = t_score
-                        m_move = row, column
-                        if n == 0:
-                            break
-        if n == 0:
-            print(checks)
-            return m_move
-        else:
-            return score
 
 
-graph = []
-
-for g_wid in range(4):
-    for g_height in range(4):
-        checks = 0
-        game_size = (g_wid + 1, g_height + 1)
-        tiles = []
-        for i in range(game_size[0]):
-            tiles.append([])
-            for j in range(game_size[1]):
-                tiles[i].append(True)
-        minimax(tiles)
-        graph.append((game_size, checks))
-        print(graph)
-
-
-# t = copy.deepcopy(tiles)
-# move = minimax(tiles)
-# tiles = click_tiles(move[0], move[1], tiles)
-# checks = 0
 
 while False:
     for event in pygame.event.get():

@@ -3,28 +3,25 @@ import sys
 import ctypes
 import math
 import copy
+import numpy as np
 from time import sleep
+import time
 
 user32 = ctypes.windll.user32
-# pygame.init()
+#pygame.init()
 size = width, height = round(user32.GetSystemMetrics(0) / 1.3), round(user32.GetSystemMetrics(1) / 1.3)
-# screen = pygame.display.set_mode(size)  # this is the surface
+#screen = pygame.display.set_mode(size)  # this is the surface
 won = 0
 
 game_size = (3, 3)
-tiles = []
-for i in range(game_size[0]):
-    tiles.append([])
-    for j in range(game_size[1]):
-        tiles[i].append(True)
+tiles = np.zeros(game_size)
+tiles[:, :] = 1
 
 
 def click_tiles(x, y, game_state):
     game_state = copy.deepcopy(game_state)
     if game_state[x][y]:
-        for c_row in range(x + 1):
-            for c_column in range(y + 1):
-                game_state[c_row][c_column] = False
+        game_state[0:x + 1, 0:y + 1] = 0
     return game_state
 
 
@@ -35,27 +32,25 @@ checks = 0
 
 def minimax(game_state, n=0):
     global checks
-    if not game_state[-1][-1]:
+    if game_state[-1][-1] == 0:
         if n == 0:
             return -1, -1
         else:
-            return 1
+            return -1
     else:
         score = -2
         m_move = -1, -1
-        for row in reversed(range(game_size[0])):
-            for column in reversed(range(game_size[1])):
+        for r_index, row in enumerate(game_state):
+            for c_index, cell in enumerate(row):
                 checks = checks + 1
-                if checks % 100000 == 0:
+                if checks % 1000000 == 0:
                     print(checks)
-                if game_state[row][column]:
-                    t_game_state = click_tiles(row, column, game_state)
+                if cell == 1:
+                    t_game_state = click_tiles(r_index, c_index, game_state)
                     t_score = -minimax(t_game_state, n + 1)
                     if t_score > score:
                         score = t_score
-                        m_move = row, column
-                        if n == 0:
-                            break
+                        m_move = r_index, c_index
         if n == 0:
             print(checks)
             return m_move
@@ -65,24 +60,23 @@ def minimax(game_state, n=0):
 
 graph = []
 
-for g_wid in range(4):
-    for g_height in range(4):
-        checks = 0
-        game_size = (g_wid + 1, g_height + 1)
-        tiles = []
-        for i in range(game_size[0]):
-            tiles.append([])
-            for j in range(game_size[1]):
-                tiles[i].append(True)
-        minimax(tiles)
-        graph.append((game_size, checks))
-        print(graph)
+if True:
+    for g_wid in range(5):
+        for g_height in range(4):
+            checks = 0
+            game_size = (g_wid + 1, g_height + 1)
+            tiles = np.zeros(game_size)
+            tiles[:, :] = 1
+            t = time.time()
+            m = minimax(tiles)
+            print(time.time() - t)
+            graph.append((game_size, m, checks))
+            print(graph)
 
-
-# t = copy.deepcopy(tiles)
-# move = minimax(tiles)
-# tiles = click_tiles(move[0], move[1], tiles)
-# checks = 0
+#checks = 0
+#t = copy.deepcopy(tiles)
+#move = minimax(tiles)
+#tiles = click_tiles(move[0], move[1], tiles)
 
 while False:
     for event in pygame.event.get():

@@ -16,7 +16,7 @@ screen = pygame.display.set_mode(size)  # this is the surface
 won = 0
 
 # builds a numpy array of 1 values for the game board
-game_size = (5, 6)
+game_size = (4, 6)
 tiles = np.zeros(game_size)
 tiles[:, :] = 1
 
